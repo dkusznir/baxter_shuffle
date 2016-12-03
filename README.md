@@ -1,2 +1,2 @@
 # baxter_shuffle
-Baxter shuffle project for ME 495 final project.
+Baxter shuffle for ME 495 final project.
