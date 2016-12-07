@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 import baxter_interface
 
-from cv_bridge import CvBridge, CvBridgeError
+from baxter_core_msgs.msg import EndpointState
 from geometry_msgs.msg import (
     PoseStamped,
     Pose,
@@ -29,20 +29,28 @@ from baxter_core_msgs.srv import (
     SolvePositionIKRequest,
 )
 
-def controllerCallBack(vector):
-    rospy.loginfo(vector)
+def getGripperPose(data):
+    receive_pose = data.pose
+    # only want the position x,y,z
+    current_position = receive_pose.position
+    # rospy.loginfo("Printing position... ")
+    # rospy.loginfo(current_position)
 
-    newPose = Pose()
-
-    # newPose.orientation.x = -0.366894936773
-    # newPose.orientation.y =  0.885980397775
-    # newPose.orientation.z =  0.108155782462
-    # newPose.orientation.w =  0.262162481772
+def getVector(vector):
+    receive_vector = vector
+    # rospy.loginfo("Printing vector... ")
+    # rospy.loginfo(receive_vector)
 
 def main():
 
     rospy.init_node('limbs_contrller', anonymous = True)
-    rospy.Subscriber("/pinHoleCameraVector",Point,controllerCallBack)
+    global receive_pose
+    rospy.Subscriber("/pinHoleCameraVector",Point,getVector)
+    global receive_vector
+    rospy.Subscriber("/robot/limb/left/endpoint_state",EndpointState,getGripperPose)
+    global pub_point
+    pub_point = rospy.Publisher('pointGeneratedFromController',Point,queue_size=10)
+
 
     try:
         rospy.spin()
