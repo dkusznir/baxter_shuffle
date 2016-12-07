@@ -32,7 +32,7 @@ Unload blocks from start row to random locations on table:
 0:	START
 	Initialize array: if there are j_max blocks on the start row, the array will be j_max x 2 (for x-y coordinates)
 
-While (j<j_max) {
+For j=1:j_max {
 	1:	Grab block j from start row
 	2:	Generate random location [x_cand,y_cand] on table (within reachable workspace)
 	3:	Q: Is the candidate location too close to any other objects (within a certain radius)?
@@ -53,16 +53,19 @@ While (j<j_max) {
 	4:	Put block down at the location
 	5:	Update the array
 		[x(j),y(j)] = [x_cand,y_cand]
-	6:	j++
-end (while)
+end (for)
 }
 
 
-Shuffle blocks randomly around on the table, Method 1 (there are multiple methods):
+# Shuffle blocks randomly around on the table, Method 1 (there are multiple methods):
+# Shuffle Method 1 shuffles 'sequentially':
+# It cycles through the j blocks and randomly repositions them one at a time.
+# It 
 
 While (shuffle_counter < shuff_counter_max) {
 	For j=1:j_max	
-		1:	Grab block 
+		1:	Grab block j
+			(move end-effector to [x(j),y(j)] and grasp, then pull up to specified height).
 		2:	Generate random location [x_cand, y_cand] on table (within reachable workspace)
 		3:	Q: Is the candidate location too close to any other objects (within a certain radius)?
 				for i = 1:length(array)
@@ -83,5 +86,71 @@ While (shuffle_counter < shuff_counter_max) {
 		5:	Update the array
 			[x(j),y(j)] = [x_cand,y_cand]
 	end (for)
+	shuffle_counter++	#	increment shuffle counter
 end (while)
 }
+
+# Shuffle Method 2:
+# Grab the closest (closest to Baxter's torso or something) block and randomly reposition it.
+# How to detect the closest block?
+#	Visually
+#		I don't know how this would work yet. Maybe like this:
+#			1:	Visually locate all j_max blocks
+#			2:	Compute Euclidean distance from each block to some point on Baxter's body
+#			3:	Grab the block that corresponds to the minimum Euclidean distance.
+#	Use array of block locations
+#		For j=1:j_max
+#			distance = sqrt((x(j) - x_baxter)**2 + (y(j) - y_baxter)**2)
+#		end (for)
+#		[closest_distance, closest_index] = min(distance)
+
+While (shuffle_counter < shuff_counter_max) {
+	#	Find closest block:
+	For j=1:j_max
+		distance = sqrt((x(j) - x_baxter)**2 + (y(j) - y_baxter)**2)
+	end (for)
+	[closest_distance, closest_index] = min(distance)
+
+	1:	Grab block closest_index
+		(move end-effector to [x(closest_index),y(closest_index)] and grasp, then pull up to specified height).
+	2:	Generate random location [x_cand, y_cand] on table (within reachable workspace)
+	3:	Q: Is the candidate location too close to any other objects (within a certain radius)?
+			for i = 1:length(array)
+				Compute 2-norm between candidate point and [x(i), y(i)] pair.
+				if 2-norm < tolerance
+					"too close"=Yes
+				else
+					"too close"=No
+				end (if)
+			end (for)
+			A:	If "too close"==Yes
+				Go back to 2 (generate random location)
+		 	Else
+				Continue to 4
+			end (if)
+	4:	Put block down at the location
+	5:	Update the array
+		[x(j),y(j)] = [x_cand,y_cand]
+	shuffle_counter++	#	increment shuffe counter
+end (while)
+}
+
+
+Note: the following lines of (pseudo)code could easily exist as a separate function:
+2:	Generate random location [x_cand, y_cand] on table (within reachable workspace)
+3:	Q: Is the candidate location too close to any other objects (within a certain radius)?
+		for i = 1:length(array)
+			Compute 2-norm between candidate point and [x(i), y(i)] pair.
+			if 2-norm < tolerance
+				"too close"=Yes
+			else
+				"too close"=No
+			end (if)
+		end (for)
+		A:	If "too close"==Yes
+			Go back to 2 (generate random location)
+	 	Else
+			Continue to 4
+		end (if)
+
+As a separate function, the code above could look like this:
