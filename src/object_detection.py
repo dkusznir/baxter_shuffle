@@ -5,10 +5,16 @@ import numpy as np
 import baxter_interface
 
 from std_msgs.msg import String
-from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point
 
 from cv_bridge import CvBridge, CvBridgeError
+from image_geometry import PinholeCameraModel
+
+from geometry_msgs.msg import Point
+from sensor_msgs.msg import (
+    Image,
+    CameraInfo,
+)
 
 def callback(data):
     bridge = CvBridge()
@@ -42,13 +48,42 @@ def callback(data):
 
     # show process image
     cv2.imshow("Camera Image window", cv_image)
+
+    # determine unit vector from camera to object
+    cam = PinholeCameraModel()
+    cam.fromCameraInfo(cam_info)
+    (x, y, z) = cam.projectPixelTo3dRay((cx, cy))
+    rospy.loginfo("Vector to block center:x= %f, y= %f, z= %f",x,y,z)
+
+    newPoint = Point()
+    newPoint.x = x
+    newPoint.y = y
+    newPoint.z = z
+
+    pub_pose.publish(newPoint)
+
+
+
     cv2.waitKey(3)
 
 def main():
-    rospy.init_node('left_hand_camera', anonymous = True)
+    rospy.init_node('left_hand_camera_detection', anonymous = True)
+
+    global cam_info
+    cam_info = None
+
+    rospy.loginfo("Waiting for camera_info topic...")
+    try:
+        cam_info = rospy.wait_for_message('/cameras/left_hand_camera/camera_info',CameraInfo,timeout=5)
+    except(rospy.ROSException), e:
+        rospy.loginfo("Fail - no cam_info received")
+        return False
 
     rospy.Subscriber("/cameras/left_hand_camera/image",Image,callback)
     cv2.namedWindow("Camera Image window")
+
+    global pub_pose
+    pub_pose = rospy.Publisher('pinHoleCameraVector', Point, queue_size=10)
 
     try:
         rospy.spin()
