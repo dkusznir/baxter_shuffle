@@ -53,14 +53,16 @@ def callback(data):
     cam = PinholeCameraModel()
     cam.fromCameraInfo(cam_info)
     (x, y, z) = cam.projectPixelTo3dRay((cx, cy))
+    # rospy.loginfo("Printing vector... ")
     rospy.loginfo("Vector to block center:x= %f, y= %f, z= %f",x,y,z)
 
-    newPoint = Point()
-    newPoint.x = x
-    newPoint.y = y
-    newPoint.z = z
+    newVector = Point()
+    newVector.x = x
+    newVector.y = y
+    newVector.z = z
 
-    pub_pose.publish(newPoint)
+    # publish a vector actually
+    pub_vector.publish(newVector)
 
 
 
@@ -82,8 +84,8 @@ def main():
     rospy.Subscriber("/cameras/left_hand_camera/image",Image,callback)
     cv2.namedWindow("Camera Image window")
 
-    global pub_pose
-    pub_pose = rospy.Publisher('pinHoleCameraVector', Point, queue_size=10)
+    global pub_vector
+    pub_vector = rospy.Publisher('pinHoleCameraVector', Point, queue_size=10)
 
     try:
         rospy.spin()
