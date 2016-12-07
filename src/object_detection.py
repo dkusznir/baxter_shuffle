@@ -60,7 +60,6 @@ def callback(data):
     newVector.x = x
     newVector.y = y
     newVector.z = z
-
     # publish a vector actually
     pub_vector.publish(newVector)
 
