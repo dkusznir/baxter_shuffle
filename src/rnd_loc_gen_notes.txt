@@ -4,9 +4,14 @@ Overview: Baxter's shuffle routine needs random x-y locations where he can put o
 Requirement 1: the location can't be out of Baxter's reach
 Requirement 2: the location can't be where another object is already located.
 
-The root Python function will be random(), which generates a pseudo-random float on the semi-open interval [0.0,1.0). Calling this function twice will yield a pseudo-random pair of numbers in [0.0, 1.0). This pair will have to be scaled to Baxter's workspace.
+The root Python function will be random(), which generates a pseudo-random float on the semi-open interval [0.0,1.0). Calling this function twice will yield a pseudo-random pair of numbers in [0.0, 1.0). This pair will have to be mapped to Baxter's workspace.
 
-Idea 1: design a scaling algorithm that ensures all scaled points are within Baxter's reachable workspace.
+Idea 1: design a mapping algorithm that ensures all mapped points are within Baxter's reachable workspace.
+	Task: Figure out what is Baxter's reachable workspace? It will be the overlap of the reachable workspace of the left and right arms, and it might look like a Venn diagram.
+	Potential problem: the Venn diagram of reachable points is either too small or too large.
+		If it's too large, hopefully it will encompass the table, in which case all points on the table are reachable.
+		If it's too small (what does that mean?),???
+	If it isn't possible to design a mapping algorithm that ensures all mapped points are within Baxter's reachable workspace, we will have to mathematically describe the reachable workspace, perhaps a 2D projection of the 3D reachable space onto the table. That projection could be "rounded down" to a circle or square of specified dimensions.
 
 If Idea 1 (above) is implemented, then Requirement 1 vanishes since it will be satisfied for all scaled pseudo-random points. Otherwise if Idea 1 is not implemented, I think checking whether a new random location meets Requirement 2 will be easier than checking whether it meets Requirement 1.
 
@@ -19,13 +24,6 @@ How to check with Requirement 2?
 		2				2.0				1.0
 		3				0.5				1.5
 
-	Baxter can shuffle "blindly" or "not blindly" (I don't know what to call it):
-		Shuffling "blindly":
-			When Baxter generates a new acceptable random location for a block, he puts the block he is currently holding at that location and just updates the oldest entry in the array. In this method, Block Number does not denote a specific block (for example, a green block or a red block), only the order in which the blocks have been moved.
-			THIS METHOD WON'T WORK
-		Shuffling "not blindly":
-			Baxter needs to know some information about the block he's currently holding: he needs to know where it came from.
-
 
 
 Shuffle algorithm:
@@ -34,7 +32,7 @@ Unload blocks from start row to random locations on table:
 0:	START
 	Initialize array: if there are j_max blocks on the start row, the array will be j_max x 2 (for x-y coordinates)
 
-While j<j_max, {
+While (j<j_max) {
 	1:	Grab block j from start row
 	2:	Generate random location [x_cand,y_cand] on table (within reachable workspace)
 	3:	Q: Is the candidate location too close to any other objects (within a certain radius)?
@@ -44,23 +42,46 @@ While j<j_max, {
 					"too close"=Yes
 				else
 					"too close"=No
-				end
-			end
+				end (if)
+			end (for)
 
 		A:	If "too close"==Yes
 				Go back to 2 (generate random location)
 		 	Else
 				Continue to 4
-			end
+			end (if)
 	4:	Put block down at the location
 	5:	Update the array
 		[x(j),y(j)] = [x_cand,y_cand]
 	6:	j++
+end (while)
 }
 
 
-Shuffle blocks randomly around on the table:
+Shuffle blocks randomly around on the table, Method 1 (there are multiple methods):
 
-While shuffle_counter < shuff_counter_max, {
-	
+While (shuffle_counter < shuff_counter_max) {
+	For j=1:j_max	
+		1:	Grab block 
+		2:	Generate random location [x_cand, y_cand] on table (within reachable workspace)
+		3:	Q: Is the candidate location too close to any other objects (within a certain radius)?
+				for i = 1:length(array)
+					Compute 2-norm between candidate point and [x(i), y(i)] pair.
+					if 2-norm < tolerance
+						"too close"=Yes
+					else
+						"too close"=No
+					end (if)
+				end (for)
+
+			A:	If "too close"==Yes
+					Go back to 2 (generate random location)
+			 	Else
+					Continue to 4
+				end (if)
+		4:	Put block down at the location
+		5:	Update the array
+			[x(j),y(j)] = [x_cand,y_cand]
+	end (for)
+end (while)
 }
