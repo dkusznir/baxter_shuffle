@@ -135,6 +135,7 @@ While (shuffle_counter < shuff_counter_max) {
 end (while)
 }
 
+I think Method 1 of shuffling is easier to implement because it doesn't require an additional calculation to find the nearest block; it just uses the known positions of the blocks.
 
 Note: the following lines of (pseudo)code could easily exist as a separate function:
 2:	Generate random location [x_cand, y_cand] on table (within reachable workspace)
@@ -154,3 +155,21 @@ Note: the following lines of (pseudo)code could easily exist as a separate funct
 		end (if)
 
 As a separate function, the code above could look like this:
+
+def xy_rand(array,tolerance):
+	too_close = 1; # initialize flag
+	while(too_close):
+		x = random();
+		y = random();
+		[x_cand,y_cand]= mapping_function(x,y); # maps a pair of [0,1) numbers to the reachable workspace
+		for i = 1:size(array,1)
+			distance(i) = sqrt((x_cand - x(i))**2 + (y_cand - y(i))**2)
+		end (for)
+		if (distance(1) > tolerance && distance(2) > tolerance && distance(3) > tolerance)
+			too_close = 1
+		else
+			too_close = 0
+		end (if)
+	end (while)
+	return [x_cand, y_cand]
+end (function)
