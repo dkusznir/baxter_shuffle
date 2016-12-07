@@ -3,24 +3,34 @@ import argparse
 import struct
 import sys
 import rospy
-import baxter_interface
+import cv2
 import numpy as np
+import baxter_interface
 
+from cv_bridge import CvBridge, CvBridgeError
 from geometry_msgs.msg import (
     PoseStamped,
     Pose,
     Point,
     Quaternion,
 )
-from std_msgs.msg import Header
 
-from sensor_msgs.msg import JointState
+from std_msgs.msg import (
+    Header,
+    String,
+)
 
+from sensor_msgs.msg import (
+    JointState,
+)
 
 from baxter_core_msgs.srv import (
     SolvePositionIK,
     SolvePositionIKRequest,
 )
+
+def getVectorCallBack(vector):
+    receive_vector = vector
 
 def control_baxter_arm(limb,point,quaternion):
     rospy.loginfo("Received pose... ")
@@ -74,7 +84,7 @@ def control_baxter_arm(limb,point,quaternion):
         else:
             rospy.loginfo("INVALID POSE - Inupt Different Seed Angles + Random Noise.")
 
-            # Yuchun suggsted add a random noise to seed if IK has no solution
+            # Yunchu suggsted add a random noise to seed if IK has no solution
             random= np.random.normal(0,0.25,7)
             js = JointState()
             js.header = hdr
@@ -102,9 +112,19 @@ def control_baxter_arm(limb,point,quaternion):
         # limb_right = baxter_interface.Limb('right')
         limb_right.move_to_joint_positions(limb_joints)
 
+    newPose = Pose()
+
+    # newPose.orientation.x = -0.366894936773
+    # newPose.orientation.y =  0.885980397775
+    # newPose.orientation.z =  0.108155782462
+    # newPose.orientation.w =  0.262162481772
+
 def main():
 
-    rospy.init_node('control_baxter_left_arm',anonymous = True)
+    rospy.init_node('limbs_tracking', anonymous = True)
+    rospy.Subscriber("/pinHoleCameraVector",Point,getVectorCallBack)
+
+    global receive_vector
 
     check_version = baxter_interface.CHECK_VERSION
     baxter = baxter_interface.RobotEnable(check_version)
@@ -112,27 +132,11 @@ def main():
     rospy.loginfo("Enabling robot... ")
     baxter.enable()
 
-    # grippers
-    # gripper_left = baxter_interface.Gripper('left')
-    # gripper_right = baxter_interface.Gripper('right')
-    # gripper_left.calibrate() # must calibrate at first run
-    # gripper_right.calibrate()
-    # rospy.loginfo("Gripper calibrated... ")
-    # gripper_left.open()
-    # gripper_right.open()
-
-    # left
-    test_left_p = Point(x=0.708957491385,y=0.690865844219,z=-0.0384777685175)
-    test_left_q = Quaternion(x=0.0391285432204,y=0.99907875939,z=-0.0127315450489,w=-0.0121859510329)
-
-    # right
-    # test_right_p = Point(x=0.656982770038,y=-0.852598021641,z=0.0388609422173)
-    # test_right_q = Quaternion(x=-0.0249590815779,y=0.999649402929,z=0.00737916180073,w=0.00486450832011)
-
-    control_baxter_arm('left',test_left_p,test_left_q)
-    # control_baxter_arm('right',test_right_p,test_right_q)
-
-    rospy.spin()
+    try:
+        rospy.spin()
+    except KeyboardInterrupt:
+        print("Shutting down")
+        cv2.destroyAllWindows()
 
 if __name__ == '__main__':
     main()
