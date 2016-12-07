@@ -1,0 +1,16 @@
+Random location generator for Baxter shuffle - notes
+
+Overview: Baxter's shuffle routine needs random x-y locations where it can put objects after it picks them up. There are two constraints on admissiable locations:
+Requirement 1: the location can't be out of Baxter's reach
+Requirement 2: the location can't be where another object is already located.
+
+The root Python function will be random(), which generates a pseudo-random float on the semi-open interval [0.0,1.0). Calling this function twice will yield a pseudo-random pair of numbers in [0.0, 1.0). This pair will have to be scaled to Baxter's workspace.
+
+Idea 1: design a scaling algorithm that ensures all scaled points are within Baxter's reachable workspace.
+
+If Idea 1 (above) is implemented, then Requirement 1 vanishes since it will be satisfied for all scaled pseudo-random points. Otherwise if Idea 1 is not implementd, I think checking whether a new random location meets Requirement 2 will be easier than checking whether it meets Requirement 1.
+
+How to check with Requirement 2?
+	Keep track of each block's current location in a fixed-size array (one dimension of which will be the number of blocks Baxter is manipulating).
+	The array being full implies all the blocks are on the table, in random locations.
+	As shuffling continues, 
