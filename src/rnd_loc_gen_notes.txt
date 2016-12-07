@@ -1,6 +1,6 @@
 Random location generator for Baxter shuffle - notes
 
-Overview: Baxter's shuffle routine needs random x-y locations where it can put objects after it picks them up. There are two constraints on admissiable locations:
+Overview: Baxter's shuffle routine needs random x-y locations where he can put objects after he picks them up. There are two constraints on admissiable locations:
 Requirement 1: the location can't be out of Baxter's reach
 Requirement 2: the location can't be where another object is already located.
 
@@ -8,9 +8,27 @@ The root Python function will be random(), which generates a pseudo-random float
 
 Idea 1: design a scaling algorithm that ensures all scaled points are within Baxter's reachable workspace.
 
-If Idea 1 (above) is implemented, then Requirement 1 vanishes since it will be satisfied for all scaled pseudo-random points. Otherwise if Idea 1 is not implementd, I think checking whether a new random location meets Requirement 2 will be easier than checking whether it meets Requirement 1.
+If Idea 1 (above) is implemented, then Requirement 1 vanishes since it will be satisfied for all scaled pseudo-random points. Otherwise if Idea 1 is not implemented, I think checking whether a new random location meets Requirement 2 will be easier than checking whether it meets Requirement 1.
 
 How to check with Requirement 2?
 	Keep track of each block's current location in a fixed-size array (one dimension of which will be the number of blocks Baxter is manipulating).
 	The array being full implies all the blocks are on the table, in random locations.
-	As shuffling continues, 
+	For example, with 3 blocks in the shuffle, the array could look like this:
+		Block number 	X-location 		Y-location
+		1				1.0				2.0
+		2				2.0				1.0
+		3				0.5				1.5
+
+	Baxter can shuffle "blindly" or "not blindly" (I don't know what to call it):
+		Shuffling "blindly":
+			When Baxter generates a new acceptable random location for a block, he puts the block he is currently holding at that location and just updates the oldest entry in the array. In this method, Block Number does not denote a specific block (for example, a green block or a red block), only the order in which the blocks have been moved.
+			THIS METHOD WON'T WORK
+		Shuffling "not blindly":
+			Baxter needs to know some information about the block he's currently holding: he needs to know where it came from.
+
+
+
+
+Question: I have a block. Where can I put it?
+Answer: how about this random location?
+	Question: is this random location acceptable
