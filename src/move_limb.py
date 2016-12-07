@@ -122,15 +122,15 @@ def main():
     # gripper_right.open()
 
     # left
-    test_left_p = Point(x=0.657579481614,y=0.851981417433,z=0.0388352386502)
-    test_left_q = Quaternion(x=-0.366894936773,y=0.885980397775,z=0.108155782462,w=0.262162481772)
+    test_left_p = Point(x=0.708957491385,y=0.690865844219,z=-0.0384777685175)
+    test_left_q = Quaternion(x=0.0391285432204,y=0.99907875939,z=-0.0127315450489,w=-0.0121859510329)
 
     # right
-    test_right_p = Point(x=0.656982770038,y=-0.852598021641,z=0.0388609422173)
-    test_right_q = Quaternion(x=-0.367048116303,y=0.885911751787,z=-0.108908281936,w=0.261868353356)
+    # test_right_p = Point(x=0.656982770038,y=-0.852598021641,z=0.0388609422173)
+    # test_right_q = Quaternion(x=-0.0249590815779,y=0.999649402929,z=0.00737916180073,w=0.00486450832011)
 
     control_baxter_arm('left',test_left_p,test_left_q)
-    control_baxter_arm('right',test_right_p,test_right_q)
+    # control_baxter_arm('right',test_right_p,test_right_q)
 
     rospy.spin()
 
