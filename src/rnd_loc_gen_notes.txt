@@ -28,7 +28,19 @@ How to check with Requirement 2?
 
 
 
+Shuffle algorithm:
 
-Question: I have a block. Where can I put it?
-Answer: how about this random location?
-	Question: is this random location acceptable
+0:	START
+	Initialize array: if there are i blocks on the start row, the array will be i x 2 (for x-y coordinates)
+1:	Grab block from start row
+2:	Generate random location on table (within reachable workspace)
+3:	Q: Is the candidate location too close to any other objects (within a certain radius)?
+		for i = 1:length(array)
+			Compute 2-norm between candidate point and (x(i), y(i)) pair.
+	A:	Yes
+		Go back to 2 (generate random location)
+	A: 	No
+		Continue to 4
+4:	Put block down at the location
+5:	Update the array
+	There is a block at (x,y)
