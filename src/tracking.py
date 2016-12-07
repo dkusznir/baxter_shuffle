@@ -29,9 +29,6 @@ from baxter_core_msgs.srv import (
     SolvePositionIKRequest,
 )
 
-def getVectorCallBack(vector):
-    receive_vector = vector
-
 def control_baxter_arm(limb,point,quaternion):
     rospy.loginfo("Received pose... ")
     check_version = baxter_interface.CHECK_VERSION
@@ -112,20 +109,19 @@ def control_baxter_arm(limb,point,quaternion):
         # limb_right = baxter_interface.Limb('right')
         limb_right.move_to_joint_positions(limb_joints)
 
-    newPose = Pose()
-
-    # newPose.orientation.x = -0.366894936773
-    # newPose.orientation.y =  0.885980397775
-    # newPose.orientation.z =  0.108155782462
-    # newPose.orientation.w =  0.262162481772
+def getPointCallBack(point):
+    receive_point = point
+    # rospy.loginfo("Print pose...")
+    # rospy.loginfo(receive_pose)
+    fixed_gripper_q = Quaternion(x=0.0391285432204,y=0.99907875939,z=-0.0127315450489,w=-0.0121859510329)
+    control_baxter_arm('left',point,fixed_gripper_q)
 
 def main():
 
     rospy.init_node('limbs_tracking', anonymous = True)
-    rospy.Subscriber("/pinHoleCameraVector",Point,getVectorCallBack)
+    rospy.Subscriber("/pointGeneratedFromController", Point, getPointCallBack)
 
-    global receive_vector
-
+    global receive_point
     check_version = baxter_interface.CHECK_VERSION
     baxter = baxter_interface.RobotEnable(check_version)
     init_state = baxter.state().enabled
