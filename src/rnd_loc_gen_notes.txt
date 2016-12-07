@@ -30,17 +30,37 @@ How to check with Requirement 2?
 
 Shuffle algorithm:
 
+Unload blocks from start row to random locations on table:
 0:	START
-	Initialize array: if there are i blocks on the start row, the array will be i x 2 (for x-y coordinates)
-1:	Grab block from start row
-2:	Generate random location on table (within reachable workspace)
-3:	Q: Is the candidate location too close to any other objects (within a certain radius)?
-		for i = 1:length(array)
-			Compute 2-norm between candidate point and (x(i), y(i)) pair.
-	A:	Yes
-		Go back to 2 (generate random location)
-	A: 	No
-		Continue to 4
-4:	Put block down at the location
-5:	Update the array
-	There is a block at (x,y)
+	Initialize array: if there are j_max blocks on the start row, the array will be j_max x 2 (for x-y coordinates)
+
+While j<j_max, {
+	1:	Grab block j from start row
+	2:	Generate random location [x_cand,y_cand] on table (within reachable workspace)
+	3:	Q: Is the candidate location too close to any other objects (within a certain radius)?
+			for i = 1:length(array)
+				Compute 2-norm between candidate point and [x(i), y(i)] pair.
+				if 2-norm < tolerance
+					"too close"=Yes
+				else
+					"too close"=No
+				end
+			end
+
+		A:	If "too close"==Yes
+				Go back to 2 (generate random location)
+		 	Else
+				Continue to 4
+			end
+	4:	Put block down at the location
+	5:	Update the array
+		[x(j),y(j)] = [x_cand,y_cand]
+	6:	j++
+}
+
+
+Shuffle blocks randomly around on the table:
+
+While shuffle_counter < shuff_counter_max, {
+	
+}
