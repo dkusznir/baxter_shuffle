@@ -2,7 +2,7 @@
 
 
 # Baxter Shuffle
-#### ME 495: Embedded Systems in Robotics
+#### sME 495: Embedded Systems in Robotics
 #### _Li-Chun Lu_
 #### _Weiyuan Deng_
 #### _Daniel Lynch_
@@ -32,6 +32,7 @@ This project uses Baxter to perform a simplified version of the classic [shell g
 ### Project Overview
 
 ### Implementation
+#### Shuffle Algorithm
 
 ### Reference
 
