@@ -40,8 +40,12 @@ This project uses Baxter to perform a simplified version of the classic [shell g
 
 ### Further Improvements
 
-There are some tasks we can improve and implement in the future to make the algorithm more robust. The first imporvement is the implement the inverse kinematics and motion planning for the limb motion. We control the limb simply providing a position in space and hope the IK service will give us a soution. However, we found the solution is not guarantee to find even we use random noise and current limb joint pose as seeds. The entire limb motion could be better if we can calculate severl waypoints along the initial pose and the final pose to reduce IK service error.
+There are some tasks we can improve and implement in the future to make the algorithm more robust. 
+
+The first imporvement is the implement the inverse kinematics and motion planning for the limb motion. We control the limb simply providing a position in space and hope the IK service will give us a soution. However, we found the solution is not guarantee to find even we use random noise and current limb joint pose as seeds. The entire limb motion could be better if we can calculate severl waypoints along the initial pose and the final pose to reduce IK service error.
+
 The second imporvement is to try different method for detecting objects on the table. We could have the end gripper and camera travel  above the workspaec, inspect the enitre area and mark the location where it see object and marked the location for future useage. In this approach, we may reduce the coordinate conversion error when using camera pixel coordiante or the vector from camera to the center of object. 
+
 The third improvement is to generate the random point that is within Baxter workspae. We have trouble having the Baxter go to the random point generated from the algorithm and the success rate the not high. In the end, we just create a list of locations that are solvable in IK. 
 
 ### Conclusion
