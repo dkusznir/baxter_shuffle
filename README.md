@@ -32,7 +32,7 @@ This project uses Baxter to perform a simplified version of the classic [shell g
 ### Project Overview
 
 ### Implementation
-#### Shuffle Algorithm
+  #### Shuffle Algorithm
 
 ### Reference
 
