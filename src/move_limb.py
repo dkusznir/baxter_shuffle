@@ -16,21 +16,17 @@ from std_msgs.msg import Header
 
 from sensor_msgs.msg import JointState
 
-
 from baxter_core_msgs.srv import (
     SolvePositionIK,
     SolvePositionIKRequest,
 )
 
 def control_baxter_arm(limb,point,quaternion):
-    rospy.loginfo("Received pose... ")
     check_version = baxter_interface.CHECK_VERSION
     baxter = baxter_interface.RobotEnable(check_version)
     init_state = baxter.state().enabled
-    rospy.loginfo("Enabling robot... ")
     baxter.enable()
     limb_left = baxter_interface.Limb('left')
-    limb_right = baxter_interface.Limb('right')
 
     # Adopted from rethinkrobotics.com/wiki/IK_Pick_and_Place_Demo code walkthrough
     # IK Service
@@ -96,43 +92,43 @@ def control_baxter_arm(limb,point,quaternion):
             resp = iksvc(ikreq)
 
     if limb == "left":
-        # limb_left = baxter_interface.Limb('left')
         limb_left.move_to_joint_positions(limb_joints)
     elif limb == "right":
-        # limb_right = baxter_interface.Limb('right')
         limb_right.move_to_joint_positions(limb_joints)
 
 def main():
 
-    rospy.init_node('control_baxter_left_arm',anonymous = True)
+    rospy.init_node('move_limb',anonymous = True)
 
     check_version = baxter_interface.CHECK_VERSION
     baxter = baxter_interface.RobotEnable(check_version)
     init_state = baxter.state().enabled
-    rospy.loginfo("Enabling robot... ")
     baxter.enable()
 
     # grippers
-    # gripper_left = baxter_interface.Gripper('left')
-    # gripper_right = baxter_interface.Gripper('right')
-    # gripper_left.calibrate() # must calibrate at first run
-    # gripper_right.calibrate()
-    # rospy.loginfo("Gripper calibrated... ")
-    # gripper_left.open()
-    # gripper_right.open()
+    gripper_left = baxter_interface.Gripper('left')
+    gripper_left.calibrate()
+    gripper_left.open()
 
-    # left
-    test_left_p = Point(x=0.708957491385,y=0.690865844219,z=-0.0384777685175)
-    test_left_q = Quaternion(x=0.0391285432204,y=0.99907875939,z=-0.0127315450489,w=-0.0121859510329)
+    # home position and setpoints
+    home_start = Point(x=0.548196579393,y= 0.671666419104,z=0.102095131063)
+    home_q = Quaternion(x=0.998980611394,y=-0.0323088935291,z=0.0193939908084,w=-0.0248545081974)
+    test_left_A = Point(x=0.429020231009,y=0.862069737757,z=-0.102095131063)
+    test_left_B = Point(x=0.424500413484,y=0.74269710079,z=-0.102095131063)
+    test_left_C = Point(x=0.419363627962,y=0.604682733153,z=-0.102095131063)
 
-    # right
-    # test_right_p = Point(x=0.656982770038,y=-0.852598021641,z=0.0388609422173)
-    # test_right_q = Quaternion(x=-0.0249590815779,y=0.999649402929,z=0.00737916180073,w=0.00486450832011)
+    control_baxter_arm('left',home_start,home_q)
+    rospy.sleep(2)
+    control_baxter_arm('left',test_left_A,home_q)
+    rospy.sleep(2)
+    control_baxter_arm('left',test_left_B,home_q)
+    rospy.sleep(2)
+    control_baxter_arm('left',test_left_C,home_q)
+    rospy.sleep(2)
 
-    control_baxter_arm('left',test_left_p,test_left_q)
-    # control_baxter_arm('right',test_right_p,test_right_q)
 
-    rospy.spin()
+
+    # rospy.spin()
 
 if __name__ == '__main__':
     main()
