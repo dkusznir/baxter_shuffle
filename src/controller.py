@@ -36,7 +36,7 @@ def getGripperPose(data):
     # rospy.loginfo("Printing position... ")
     # rospy.loginfo(current_position)
 
-def getVector(vector):
+def getPoint(vector):
     receive_vector = vector
     # rospy.loginfo("Printing vector... ")
     # rospy.loginfo(receive_vector)
@@ -45,7 +45,7 @@ def main():
 
     rospy.init_node('limbs_contrller', anonymous = True)
     global receive_pose
-    rospy.Subscriber("/pinHoleCameraVector",Point,getVector)
+    rospy.Subscriber("/convertPixeltoCoordinate",Point,getPoint)
     global receive_vector
     rospy.Subscriber("/robot/limb/left/endpoint_state",EndpointState,getGripperPose)
     global pub_point
