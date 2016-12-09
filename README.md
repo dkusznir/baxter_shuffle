@@ -11,6 +11,8 @@
 
 ### Introduction
 
+This project uses Baxter to perform a simplified version of the classic [shell game](https://en.wikipedia.org/wiki/Shell_game). The shell game is simplified in two ways: instead of using cups and an object hidden inside one of the cups, this version uses three cubes, one of which has a marker on the underside; also, instead of shuffling the blocks randomly, Baxter moves each block to a position chosen randomly from a set of specified positions. The [shuffle algorithm]() section explains this simplification in greater detail.
+
 ### Equipment and Hardware Requirements
 
 1. Baxter Robot
@@ -31,7 +33,7 @@
 
 ### Implementation
 
-### Refenece
+### Reference
 
 ### Scripts
 
@@ -43,7 +45,7 @@ Matlab version of shuffle algorithm [*Baxtershuffle.m*](https://github.com/dkusz
 
 shuffle algorithm python [*Baxtershuffle.py*](https://github.com/dkusznir/baxter_shuffle/blob/master/src/Baxtershuffle.py)
 
-controlelr node, but not used in the program [*controller.py*](https://github.com/dkusznir/baxter_shuffle/blob/master/src/controller.py)
+controller node, but not used in the program [*controller.py*](https://github.com/dkusznir/baxter_shuffle/blob/master/src/controller.py)
 
 we use this node to try debug and test Baxter left arm movement [*move_limb.py*](https://github.com/dkusznir/baxter_shuffle/blob/master/src/move_limb.py)
 
