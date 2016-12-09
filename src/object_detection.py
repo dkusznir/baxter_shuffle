@@ -6,10 +6,8 @@ import baxter_interface
 
 from std_msgs.msg import String
 from geometry_msgs.msg import Point
-
 from cv_bridge import CvBridge, CvBridgeError
 from image_geometry import PinholeCameraModel
-
 from geometry_msgs.msg import Point
 from sensor_msgs.msg import (
     Image,
@@ -17,6 +15,15 @@ from sensor_msgs.msg import (
 )
 
 def callback(data):
+    # conversion from image pixel to baxter coordinates
+    # newPoint = Point()
+    # newPoint.x = 0.615534177063
+    # newPoint.y = 0.567440498728
+    # newPoint.z = -0.0683162101765
+    #
+    # pub_point.publish(newPoint)
+
+
     bridge = CvBridge()
     try:
         cv_image = bridge.imgmsg_to_cv2(data, "bgr8")
@@ -37,54 +44,54 @@ def callback(data):
     contours,hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     # draw contours
     cv2.drawContours(cv_image,contours,-1,(255,0,0),3)
-
+    # find center
     M = cv2.moments(thresh)
     cx = int(M['m10']/M['m00'])
     cy = int(M['m01']/M['m00'])
-    # rospy.loginfo("width= %d, height= %d",width,height)
-    # rospy.loginfo("Cx= %d, Cy= %d",cx,cy)
+    rospy.loginfo("width= %d, height= %d",width,height)
+    rospy.loginfo("Cx= %d, Cy= %d",cx,cy)
     # draw center
     cv2.circle(cv_image,(cx,cy),4,(0,0,255),2)
-
     # show process image
     cv2.imshow("Camera Image window", cv_image)
 
-    # determine unit vector from camera to object
-    cam = PinholeCameraModel()
-    cam.fromCameraInfo(cam_info)
-    (x, y, z) = cam.projectPixelTo3dRay((cx, cy))
-    # rospy.loginfo("Printing vector... ")
-    rospy.loginfo("Vector to block center:x= %f, y= %f, z= %f",x,y,z)
+    homeCx = 340
+    homeCy = 167
 
-    newVector = Point()
-    newVector.x = x
-    newVector.y = y
-    newVector.z = z
-    # publish a vector actually
-    pub_vector.publish(newVector)
+    xFactor = 0.0006616
+    yFactor = 0.0006779
+    # conversion from image pixel to baxter coordinates
+    newPoint = Point()
+    if cx-homeCx > 0:
+        newPoint.y = 0.364276075804 - (cx-homeCx)*yFactor
+    else:
+        newPoint.y = 0.364276075804 + (cx-homeCx)*yFactor
 
+    if cy-homeCy > 0:
+        newPoint.x = 0.667494608765 + (cy-homeCy)*xFactor
+    else:
+        newPoint.x = 0.667494608765 - (cy-homeCy)*xFactor
 
+    # newPoint.x = 0.667494608765
+    # newPoint.y = 0.364276075804
+    newPoint.z = -0.0045560019772
+    # newPoint= Point()
+    # newPoint.x = 0.795210036117
+    # newPoint.y = 0.572176283352
+    # newPoint.z = -0.175121752188
+    # rospy.loginfo(newPoint)
+    pub_point.publish(newPoint)
 
     cv2.waitKey(3)
 
 def main():
     rospy.init_node('left_hand_camera_detection', anonymous = True)
 
-    global cam_info
-    cam_info = None
-
-    rospy.loginfo("Waiting for camera_info topic...")
-    try:
-        cam_info = rospy.wait_for_message('/cameras/left_hand_camera/camera_info',CameraInfo,timeout=5)
-    except(rospy.ROSException), e:
-        rospy.loginfo("Fail - no cam_info received")
-        return False
-
     rospy.Subscriber("/cameras/left_hand_camera/image",Image,callback)
     cv2.namedWindow("Camera Image window")
 
-    global pub_vector
-    pub_vector = rospy.Publisher('pinHoleCameraVector', Point, queue_size=10)
+    global pub_point
+    pub_point = rospy.Publisher('convertPixeltoCoordinate', Point, queue_size=1)
 
     try:
         rospy.spin()
