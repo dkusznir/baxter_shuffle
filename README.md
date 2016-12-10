@@ -115,7 +115,7 @@ To setup Baxter and workstation, please follow the [Baxter setup tutorial](http:
 
 `tracking.py`
 	
-  Node name: limbs_tracking
+  Node name: 'limbs_tracking'
 	
   Function:
 		
