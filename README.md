@@ -94,30 +94,45 @@ To setup Baxter and workstation, please follow the [Baxter setup tutorial](http:
 
 ##### Scripts
 `object_detection.py`
+    
     Node name: 'left_hand_camera_detection'
+
 	Function:
+		
 		This node converts the pixel-coordinate representation of the center of the detected cube to coordinates in Baxter's workspace. In the callback function for this node, we set the camera resolution to 640x400. When the program starts, the robot moves to a pre-defined home position. In Baxter's workspace, the camera identifies the cube by its green face, marks the perimeter of the cube and generates camera-frame coordinates of the cube's center point. 
+			
 			Note: we tried: `PinholeCameraModel()`, `image_geometry.PinholeCameraModel.projectPixelTo3dRay`, but they didn't work because although Baxter would move towards the specified target location, the final location of the end-effector was always off some distance from the target location.
+			
 			Note: in a second method, we followed the example [Worked_ExampleVisualServoing](http://sdk.rethinkrobotics.com/wiki/Worked_Example_Visual_Servoing), implementing the [image pixel to Workspace coordinate conversion](http://sdk.rethinkrobotics.com/wiki/Worked_Example_Visual_Servoing#Image_pixel_to_Workspace_coordinate_conversion). This method worked some of the time but resulted in unreliable pick-and-place performance, especially because of difficulty tuning the camera calibration factor `cc`.
+	
 	Subscribes to:
 		/cameras/left_hand_camera/image
+	
 	Publishes to:
 		'convertPixeltoCoordinate'
 		This will publish the center point of the detected cube using the OpenCV image processor.
 
 `tracking.py`
+	
 	Node name: limbs_tracking
+	
 	Function:
+		
 		This node receives the Baxter-frame coordinates of a point from the `left_hand_camera_detection` node. It uses the x-y coordinates of this point, along with a fixed z-coordinate and orientation (represented as a quaternion).
 		Within this node there is a Python function named `control_baxter_arm()` that solves the inverse kinematics problem and moves Baxter's arm accordingly.
 		First, moves to home position.
 		Once at home position, uses `convertPixeltoCoordinate` and moves Baxter's left arm to the green cube described by this point.
+		
 		`getPoint()`
 			Goes to home position, receives the target position. Set global flag to make sure arm receives target position before moving. Once the arm is at its target position, the flag is reset. This functions like an interrupt service routine (ISR). Once at the target position, the function saves the position into an array that keeps track of the blocks' locations.
+	
 	Subscribes to:
+		
 		'/convertPixeltoCoordinate'
 		'/robot/limb/left/endpoint_state'
+	
 	Publishes to:
+		
 		(none)
 
 ### Further Improvements
