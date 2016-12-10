@@ -1,0 +1,4 @@
+<launch>
+  <node name = "left_hand_camera_detection" pkg = "baxter_shuffle" type = "object_detection.py" output="screen"/>
+  <node name = "limbs_tracking" pkg = "baxter_shuffle" type = "tracking.py"/>
+</launch>
