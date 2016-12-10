@@ -11,7 +11,7 @@
 
 ### Introduction
 
-This project uses Baxter to perform a simplified version of the classic [shell game](https://en.wikipedia.org/wiki/Shell_game). The original idea is that an object will be placed under one cup and Baxter will shuffle each of the three cups for a period of time. One of the audience will then guess which cup contains the object by placing their hand in front of the cup. Baxter will grasp the cup and lift it, then place the cube back down on the table. The shell game is simplified in two ways: instead of using cups and an object hidden inside one of the cups, this version uses three cubes, one of which has a marker on the underside; also, instead of shuffling the blocks randomly, Baxter moves each block to a position chosen randomly from a set of specified positions. The [shuffle algorithm]() section explains this simplification in greater detail.
+This project uses Baxter to perform a simplified version of the classic [shell game](https://en.wikipedia.org/wiki/Shell_game). The original idea is that an object will be placed under one cup and Baxter will shuffle each of the three cups for a period of time. One of the audience will then guess which cup contains the object by placing their hand in front of the cup. Baxter will grasp the cup and lift it, then place the cube back down on the table. The shell game is simplified in two ways: instead of using cups and an object hidden inside one of the cups, this version uses three cubes, one of which has a marker on the underside; also, instead of shuffling the blocks randomly, Baxter moves each block to a position chosen randomly from a set of specified positions. The [shuffle algorithm](#####Shuffle Algorithm) section explains this simplification in greater detail.
 
 ### Equipment and Hardware Requirements
 
@@ -63,10 +63,48 @@ To setup Baxter and workstation, please follow the [tutorial](http://sdk.rethink
 
 ### Implementation
 ##### Shuffle Algorithm
+  The shuffle algorithm went through several revisions before the group settled on the following algorithm:
+  ```
+  0. The three blocks start from known "home" positions.
+  For each block:
+    1. A new position for the current block is chosen randomly from an array of known positions in the workspace
+    2. Baxter moves the current block from its home position to the new position
+  Steps 1 and 2 can be repeated for an arbitrary number of shufflings. Currently only 1 iteration is implemented. See the [Further Improvements](###Further Improvements) section for more about this.
+
+  Once shuffling is complete, Baxter will move the blocks back to the home positions in a different order than their original order, finishing the shuffling sequence.
+  ```
+  The shuffling algorithm uses two arrays: one array consists of the target positions used during shuffling, and the other array is a 3x2 array of the current position of each block which is updated after each iteration of shuffling.
+
+#####
 
 ### Reference
 
 ### Scripts
+object_detection.py
+	Node name: 'left_hand_camera_detection'
+	Function:
+		This node converts the pixel-coordinate representation of the center of the detected cube to coordinates in Baxter's workspace. In the callback function for this node, we set the camera resolution to 640x400. When the program starts, the robot moves to a pre-defined home position. In Baxter's workspace, the camera identifies the cube by its green face, marks the perimeter of the cube and generates camera-frame coordinates of the cube's center point. 
+			Tried: (PinholeCameraModel(), image_geometry package -->> image_geometry.PinholeCameraModel.projectPixelTo3dRay), didn't work because although Baxter would move towards the specified target location, the final location of the end-effector was always off some distance from the target location.
+			2nd way: followed example "Worked_ExampleVisualServoing" [link], implementing the "image pixel to Workspace coordinate conversion" [link]. This method worked some of the time but resulted in unreliable pick-and-place performance, especially because of difficulty tuning the camera calibration factor (cc).
+	Subscribes to:
+		/cameras/left_hand_camera/image
+	Publishes to:
+		'convertPixeltoCoordinate'
+		This will publish the center point of the detected cube using the OpenCV image processor.
+
+tracking.py
+	Node name: 'limbs_tracking'
+	Function:
+		This node receives the Baxter-frame coordinates of a point from the 'left_hand_camera_detection' node. It uses the x-y coordinates of this point, along with a fixed z-coordinate and orientation (represented as a quaternion).
+		Within this node there is a Python function named 'control_baxter_arm()' that solves the inverse kinematics problem and moves Baxter's arm accordingly. Function control_baxter_arm().
+		First, move to home position. Once at home position, uses convertPixeltoCoordinate and moves Baxter's left arm to the green cube described by this point.
+		getPoint()
+			Goes to home position, receives the target position. Set global flag to make sure arm receives target position before moving. Once the arm is at its target position, the flag is reset. This functions like an interrupt service routine (ISR). Once at the target position, the function saves the position into an array that keeps track of the blocks' locations.
+	Subscribes to:
+		'/convertPixeltoCoordinate'
+		'/robot/limb/left/endpoint_state'
+	Publishes to:
+		(none)
 
 ### Further Improvements
 
