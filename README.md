@@ -69,8 +69,12 @@ To setup Baxter and workstation, please follow the [tutorial](http://sdk.rethink
   For each block:
     1. A new position for the current block is chosen randomly from an array of known positions in the workspace
     2. Baxter moves the current block from its home position to the new position
-  Steps 1 and 2 can be repeated for an arbitrary number of shufflings. Currently only 1 iteration is implemented. See the [Further Improvements](###Further Improvements) section for more about this.
+  Steps 1 and 2 can be repeated for an arbitrary number of shufflings. Currently only 1 iteration is implemented.
 
+  Once shuffling is complete, Baxter will move the blocks back to the home positions 
+  in a different order than their original order, finishing the shuffling sequence.
+  Steps 1 and 2 can be repeated for an arbitrary number of shuffle iterations. 
+  (Currently only 1 iteration is implemented.)
   Once shuffling is complete, Baxter will move the blocks back to the home positions in a different order than their original order, finishing the shuffling sequence.
   ```
   The shuffling algorithm uses two arrays: one array consists of the target positions used during shuffling, and the other array is a 3x2 array of the current position of each block which is updated after each iteration of shuffling.
