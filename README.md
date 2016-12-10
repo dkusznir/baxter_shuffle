@@ -9,9 +9,13 @@
 #### _Dorian Kusznir_
 
 
+![baxter_photo](./images/mmexport1481331224331.jpg)
+
 ### Introduction
 
-This project uses Baxter to perform a simplified version of the classic [shell game](https://en.wikipedia.org/wiki/Shell_game). The original idea is that an object will be placed under one cup and Baxter will shuffle each of the three cups for a period of time. One of the audience will then guess which cup contains the object by placing their hand in front of the cup. Baxter will grasp the cup and lift it, then place the cube back down on the table. The shell game is simplified in two ways: instead of using cups and an object hidden inside one of the cups, this version uses three cubes, one of which has a marker on the underside; also, instead of shuffling the blocks randomly, Baxter moves each block to a position chosen randomly from a set of specified positions. The [shuffle algorithm](#####Shuffle Algorithm) section explains this simplification in greater detail.
+This project uses Baxter to perform a simplified version of the classic [shell game](https://en.wikipedia.org/wiki/Shell_game). The original idea is that an object will be placed under one cup and Baxter will shuffle each of the three cups for a period of time. One of the audience will then guess which cup contains the object by placing their hand in front of the cup. Baxter will grasp the cup and lift it, then place the cube back down on the table. The shell game is simplified in two ways: instead of using cups and an object hidden inside one of the cups, this version uses three cubes, one of which has a marker on the underside; also, instead of shuffling the blocks randomly, Baxter moves each block to a position chosen randomly from a set of specified positions. The shuffle algorithm section below explains this simplification in greater detail.
+
+Here is a [link](https://youtu.be/u8qGcpOJxrs) to a demonstration video we recorded.
 
 ### Equipment and Hardware Requirements
 
