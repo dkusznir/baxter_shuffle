@@ -81,10 +81,6 @@ To setup Baxter and workstation, please follow the [tutorial](http://sdk.rethink
   ```
   The shuffling algorithm uses two arrays: one array consists of the target positions used during shuffling, and the other array is a 3x2 array of the current position of each block which is updated after each iteration of shuffling.
 
-#####
-
-### Reference
-
 ### Scripts
 object_detection.py
 	Node name: 'left_hand_camera_detection'
@@ -126,28 +122,4 @@ The third improvement is to generate the random point that is within Baxter work
 
 It was a great experience to work with Baxter Robot. Though we came across many challenges, we finally made it. There is still a lot of work to do from our original idea. We'll try to improve our skills and make it better.
 
-Matlab version of shuffle algorithm [*Baxtershuffle.m*](https://github.com/dkusznir/baxter_shuffle/blob/master/src/Baxtershuffle.m)
-
-shuffle algorithm python [*Baxtershuffle.py*](https://github.com/dkusznir/baxter_shuffle/blob/master/src/Baxtershuffle.py)
-
-controller node, but not used in the program [*controller.py*](https://github.com/dkusznir/baxter_shuffle/blob/master/src/controller.py)
-
-we use this node to try debug and test Baxter left arm movement [*move_limb.py*](https://github.com/dkusznir/baxter_shuffle/blob/master/src/move_limb.py)
-
-node is modified to convert pixel image coordinate to baxter workspac… [*object_detection.py*](https://github.com/dkusznir/baxter_shuffle/blob/master/src/object_detection.py)
-
-added pseudocode definition of random function [*rnd_loc_gen_notes.txt*](https://github.com/dkusznir/baxter_shuffle/blob/master/src/rnd_loc_gen_notes.txt)
-
-[*tracking.py*](https://github.com/dkusznir/baxter_shuffle/blob/master/src/tracking.py)
-
-
-
-
-
-
-
-
-example
-
-![Image of Part 1 Question 2](https://github.com/ME495-EmbeddedSystems/homework-3-f2016-WeiyuanDeng/blob/starter/screenshots/q2.png)
 
