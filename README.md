@@ -19,18 +19,13 @@ This project uses Baxter to perform a simplified version of the classic [shell g
 
 Here is a [link](https://youtu.be/u8qGcpOJxrs) to a demonstration video we recorded.
 
-### Equipment and Hardware Requirements
+### Equipment and Hardware Requirements:
 
 1. Baxter Robot
-
 2. [ROS Indigo](http://wiki.ros.org/ROS/Installation) on Ubuntu 14.04
-
 3. Three colored cubes
-
 4. Marker
-
 5. Table
-
 6. Tape
 
 ### Preliminary Steps
@@ -40,31 +35,18 @@ To setup Baxter and workstation, please follow the [Baxter setup tutorial](http:
 ### Project Overview
 
 1. Move the gripper to home position
-
 2. Sweep the table to detect the cubes
-
 3. Store the position of the three cubes
-
 4. Move the gripper to the first cube 
-
 5. Pick up the cube
-
 6. Move the gripper to a random position
-
 7. Place the cube on the table
-
 8. Store the new location of the cube
-
 9. Repeat step 4~8 to the rest two cubes
-
 10. Move the gripper to a random cube
-
 11. Pick up the cube
-
 12. Move the gripper back to one of the original position
-
 13. Place the cube on the table
-
 14. Repeat step 10~13 to the rest two cubes
 
 
